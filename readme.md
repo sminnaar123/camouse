@@ -1,1 +1,2 @@
-# Camouse - A FPGA based camera mouse
+# Camouse
+## A FPGA based camera mouse
