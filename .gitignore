@@ -1,3 +1,11 @@
+# FPGA files
+
+fpga/output_files/
+fpga/db/
+fpga/incremental_db/
+fpga/*.bak
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

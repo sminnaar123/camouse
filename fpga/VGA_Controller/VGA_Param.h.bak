@@ -1,0 +1,19 @@
+//	Horizontal Parameter	( Pixel )
+parameter	H_SYNC_CYC	 =	136;  // 96;
+parameter	H_SYNC_BACK	 =	160;  // 48
+parameter	H_SYNC_ACT	 =	1024;	// 640;
+parameter	H_SYNC_FRONT =	24;	// 16;
+parameter	H_SYNC_TOTAL =	1200; // 800;
+
+//	Vertical Parameter		( Line )
+parameter	V_SYNC_CYC	 = 6   // 2;
+parameter	V_SYNC_BACK	 =	29  // 33 ;
+parameter	V_SYNC_ACT	 =	768 // 480;	
+parameter	V_SYNC_FRONT =	3 	 // 10;
+parameter	V_SYNC_TOTAL = 800 // 525;
+
+//	Start Offset
+parameter	X_START		=	H_SYNC_CYC+H_SYNC_BACK;
+parameter	Y_START		=	V_SYNC_CYC+V_SYNC_BACK;
+parameter	H_BLANK	   =	H_SYNC_FRONT+H_SYNC_CYC+H_SYNC_BACK;
+parameter	V_BLANK	   =	V_SYNC_FRONT+V_SYNC_CYC+V_SYNC_BACK;
