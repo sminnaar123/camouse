@@ -5,7 +5,7 @@ from PIL import Image
 
 # Configuration
 learning_rate = 0.00001
-epoch_amount = 4
+epoch_amount = 1
 batch_size = 48
 
 # Select GPU for more performance (when cuda is available)
@@ -48,17 +48,15 @@ class CustomNetwork(torch.nn.Module):
 
     def __init__(self):
         super().__init__()
-        self.first_hidden = torch.nn.Linear(3, 6)
-        self.second_hidden = torch.nn.Linear(6, 3)
-        self.output = torch.nn.Linear(3, 1)
-        self.sigmoid = torch.nn.Sigmoid()
+        self.first_hidden = torch.nn.Linear(3, 3)
+        self.relu = torch.nn.ReLU()
+        self.second_hidden = torch.nn.Linear(3, 1)
         
     def forward(self, x):
         # Pass the input tensor through each of our operations
         x = self.first_hidden(x)
+        x = self.relu(x)
         x = self.second_hidden(x)
-        x = self.output(x)
-        x = self.sigmoid(x)
         return x
 
 model = CustomNetwork().to(device)
@@ -88,7 +86,9 @@ for epoch in range(epoch_amount):
 # Test model
 with torch.no_grad():
     print(f"Prediction after training: f([0, 0, 0]) = {model(torch.tensor([0, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([255, 0, 0]) = {model(torch.tensor([0, 255, 0], dtype = torch.float32, device=device)).item():.5f}")
+    print(f"Prediction after training: f([255, 0, 0]) = {model(torch.tensor([255, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
     print(f"Prediction after training: f([0, 255, 0]) = {model(torch.tensor([0, 255, 0], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([0, 0, 255]) = {model(torch.tensor([0, 255, 0], dtype = torch.float32, device=device)).item():.5f}")
+    print(f"Prediction after training: f([0, 0, 255]) = {model(torch.tensor([0, 0, 255], dtype = torch.float32, device=device)).item():.5f}")
     print(f"Prediction after training: f([0, 227, 137]) = {model(torch.tensor([0, 227, 137], dtype = torch.float32, device=device)).item():.5f}")
+    w, b = model.first_hidden.parameters()
+    print(w)
