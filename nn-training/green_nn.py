@@ -5,8 +5,8 @@ from PIL import Image
 
 # Configuration
 learning_rate = 0.00001
-epoch_amount = 1
-batch_size = 48
+epoch_amount = 5
+batch_size = 100
 
 # Select GPU for more performance (when cuda is available)
 if (torch.cuda.is_available()):
@@ -21,16 +21,48 @@ class CustomDataset(torch.utils.data.Dataset):
     
     def __init__(self):
         super().__init__()
-        image = Image.open("./images/green/1_green.jpg")
-        self.x = torch.from_numpy(numpy.array(image.getdata(), dtype=numpy.float32))
-        label = Image.open("./images/green/labels/1_green_labeled.jpg")
-        pixels = list(label.getdata())
-        self.y = []
-        for pixel in pixels:
-            if (pixel[0] > 0):
-                self.y.append([1])
+
+        self.image_pixels = None
+        self.label_pixels = None
+      
+        self.image_locations = [
+            "./images/green/1_green.jpg",
+            "./images/green/2_green.jpg"
+        ]
+
+        self.label_locations = [
+            "./images/green/1_green_labeled.jpg",
+            "./images/green/2_green_labeled.jpg"
+        ]
+
+        # Load input images
+        for image_location in self.image_locations:
+            image = Image.open(image_location)
+            image_data = numpy.array(image.getdata(), dtype=numpy.float32)
+            if self.image_pixels is None:
+                self.image_pixels = image_data
             else:
-                self.y.append([0])
+                self.image_pixels = numpy.concatenate((self.image_pixels, image_data))
+
+        # Load labels for images
+        for label_location in self.label_locations:
+            label = Image.open(label_location)
+            label_data = numpy.array(label.getdata(), dtype=numpy.float32)
+            if self.label_pixels is None:
+                self.label_pixels = label_data
+            else:
+                self.label_pixels = numpy.concatenate((self.label_pixels, label_data))
+
+        # Convert image pixel array to tensor
+        self.x = torch.from_numpy(numpy.array(self.image_pixels, dtype=numpy.float32))
+
+        # Convert labels to a 1 or 0 (white and black respectively)
+        self.y = []
+        for pixel in self.label_pixels:
+            if (pixel[0] > 0):
+                self.y.append([1.0-(1e-7)])
+            else:
+                self.y.append([0.0+(1e-7)])
         self.y = torch.from_numpy(numpy.array(self.y, dtype=numpy.float32))
 
     def __getitem__(self, index):
@@ -40,8 +72,8 @@ class CustomDataset(torch.utils.data.Dataset):
         return len(self.x)
 
 dataset = CustomDataset()
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12)
 
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12)
 
 # Create model
 class CustomNetwork(torch.nn.Module):
@@ -49,26 +81,28 @@ class CustomNetwork(torch.nn.Module):
     def __init__(self):
         super().__init__()
         self.first_hidden = torch.nn.Linear(3, 3)
-        self.relu = torch.nn.ReLU()
         self.second_hidden = torch.nn.Linear(3, 1)
+        self.sigmoid = torch.nn.Sigmoid()
         
     def forward(self, x):
         # Pass the input tensor through each of our operations
         x = self.first_hidden(x)
-        x = self.relu(x)
         x = self.second_hidden(x)
+        x = self.sigmoid(x)
         return x
 
 model = CustomNetwork().to(device)
 
 # Train network
 iteration_count = len(dataset) / batch_size
-loss = torch.nn.MSELoss()
+loss = torch.nn.BCELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 for epoch in range(epoch_amount):
     for i, (inputs, labels) in enumerate(dataloader):
 
+        # Reset gradients
+        optimizer.zero_grad()
         # Forward pass
         prediction = model(inputs.to(device))
         # Determine loss
@@ -77,11 +111,10 @@ for epoch in range(epoch_amount):
         l.backward()
         # Update weight
         optimizer.step()
-        # Reset gradients
-        optimizer.zero_grad()
-        
-        if (i + 1) % batch_size == 0:
-            print(f"epoch = {epoch}/{epoch_amount}, step = {i+1}/{iteration_count}, loss = {l:.5f}")
+
+        with torch.no_grad():
+            if (i + 1) % batch_size == 0:
+                print(f"epoch = {epoch+1}/{epoch_amount}, step = {i+1}/{iteration_count:.0f}, avg. loss = {l/batch_size:.5f}")
 
 # Test model
 with torch.no_grad():
@@ -90,5 +123,3 @@ with torch.no_grad():
     print(f"Prediction after training: f([0, 255, 0]) = {model(torch.tensor([0, 255, 0], dtype = torch.float32, device=device)).item():.5f}")
     print(f"Prediction after training: f([0, 0, 255]) = {model(torch.tensor([0, 0, 255], dtype = torch.float32, device=device)).item():.5f}")
     print(f"Prediction after training: f([0, 227, 137]) = {model(torch.tensor([0, 227, 137], dtype = torch.float32, device=device)).item():.5f}")
-    w, b = model.first_hidden.parameters()
-    print(w)
