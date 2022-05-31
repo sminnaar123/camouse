@@ -4,8 +4,8 @@ import numpy
 from PIL import Image
 
 # Configuration
-learning_rate = 0.00001
-epoch_amount = 5
+learning_rate = 0.000001
+epoch_amount = 30
 batch_size = 100
 
 # Select GPU for more performance (when cuda is available)
@@ -19,21 +19,38 @@ else:
 # Define dataset
 class CustomDataset(torch.utils.data.Dataset):
     
-    def __init__(self):
+    def __init__(self, train=True):
         super().__init__()
-
         self.image_pixels = None
         self.label_pixels = None
-      
-        self.image_locations = [
-            "./images/green/1_green.jpg",
-            "./images/green/2_green.jpg"
-        ]
 
-        self.label_locations = [
-            "./images/green/1_green_labeled.jpg",
-            "./images/green/2_green_labeled.jpg"
-        ]
+        if train:
+            self.image_locations = ["./images/green/1_green.jpg", "./images/green/2_green.jpg"]
+            self.label_locations = ["./images/green/1_green_labeled.jpg", "./images/green/2_green_labeled.jpg"]
+
+            # EXTRA GREEN IMAGE DATASET
+            # self.green_image_locs = [
+            #     "./images/green/14_green.jpg",
+            #     "./images/green/17_green.jpg",
+            #     "./images/green/18_green.jpg",
+            #     "./images/green/19_green.jpg",
+            #     "./images/green/25_green.jpg"
+            # ]
+
+            # # Import green images (where all pixels should be 1)
+            # for green_image_loc in self.green_image_locs:
+            #     green_image = Image.open(green_image_loc)
+            #     resized_green_image = green_image.resize((640, 480), Image.Resampling.LANCZOS)
+            #     green_image_data = numpy.array(resized_green_image.getdata(), dtype=numpy.float32)
+            #     if self.image_pixels is None:
+            #         self.image_pixels = green_image_data
+            #     else:
+            #         self.image_pixels = numpy.concatenate((self.image_pixels, green_image_data))
+
+            # self.green_label_pixels = numpy.array([[1.0-(1e-7)] * 1] * len(self.image_pixels), dtype=numpy.float32)
+        else:
+            self.image_locations = ["./images/green/2_green.jpg"]
+            self.label_locations = ["./images/green/2_green_labeled.jpg"]
 
         # Load input images
         for image_location in self.image_locations:
@@ -71,9 +88,11 @@ class CustomDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.x)
 
-dataset = CustomDataset()
+train = CustomDataset()
+test = CustomDataset(train=False)
 
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12)
+trainDataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=4)
+testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=True, num_workers=4)
 
 # Create model
 class CustomNetwork(torch.nn.Module):
@@ -94,12 +113,12 @@ class CustomNetwork(torch.nn.Module):
 model = CustomNetwork().to(device)
 
 # Train network
-iteration_count = len(dataset) / batch_size
+iteration_count = len(train) / batch_size
 loss = torch.nn.BCELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 for epoch in range(epoch_amount):
-    for i, (inputs, labels) in enumerate(dataloader):
+    for i, (inputs, labels) in enumerate(trainDataloader):
 
         # Reset gradients
         optimizer.zero_grad()
@@ -114,9 +133,26 @@ for epoch in range(epoch_amount):
 
         with torch.no_grad():
             if (i + 1) % batch_size == 0:
-                print(f"epoch = {epoch+1}/{epoch_amount}, step = {i+1}/{iteration_count:.0f}, avg. loss = {l/batch_size:.5f}")
+                print(f"epoch = {epoch+1}/{epoch_amount}, step = {i+1}/{iteration_count:.0f}, loss = {l:.5f}")
 
 # Test model
+with torch.no_grad():
+
+    n_samples = 0.0
+    n_correct = 0.0
+
+    for images, labels in testDataloader:
+
+        images.to(device)
+        labels.to(device)
+        predicted = model(images)
+
+        n_samples += labels.size(0)
+        n_correct += (predicted == labels).sum().item()
+
+    print(n_correct)
+    print(f"Accuracy = {100.0 * n_correct / n_samples :.0f}%")
+
 with torch.no_grad():
     print(f"Prediction after training: f([0, 0, 0]) = {model(torch.tensor([0, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
     print(f"Prediction after training: f([255, 0, 0]) = {model(torch.tensor([255, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
