@@ -4,9 +4,9 @@ import numpy
 from PIL import Image
 
 # Configuration
-learning_rate = 0.000001
-epoch_amount = 30
-batch_size = 100
+learning_rate = 0.00001
+epoch_amount = 1000
+batch_size = 480
 
 # Select GPU for more performance (when cuda is available)
 if (torch.cuda.is_available()):
@@ -91,8 +91,8 @@ class CustomDataset(torch.utils.data.Dataset):
 train = CustomDataset()
 test = CustomDataset(train=False)
 
-trainDataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=4)
-testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, shuffle=True, num_workers=4)
+trainDataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=12)
+testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, num_workers=12)
 
 # Create model
 class CustomNetwork(torch.nn.Module):
@@ -143,8 +143,9 @@ with torch.no_grad():
 
     for images, labels in testDataloader:
 
-        images.to(device)
-        labels.to(device)
+        images = images.to(device)
+        labels = labels.to(device)
+
         predicted = model(images)
 
         n_samples += labels.size(0)
@@ -152,10 +153,3 @@ with torch.no_grad():
 
     print(n_correct)
     print(f"Accuracy = {100.0 * n_correct / n_samples :.0f}%")
-
-with torch.no_grad():
-    print(f"Prediction after training: f([0, 0, 0]) = {model(torch.tensor([0, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([255, 0, 0]) = {model(torch.tensor([255, 0, 0], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([0, 255, 0]) = {model(torch.tensor([0, 255, 0], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([0, 0, 255]) = {model(torch.tensor([0, 0, 255], dtype = torch.float32, device=device)).item():.5f}")
-    print(f"Prediction after training: f([0, 227, 137]) = {model(torch.tensor([0, 227, 137], dtype = torch.float32, device=device)).item():.5f}")
