@@ -1,12 +1,28 @@
+from xml.etree.ElementTree import tostring
 import torch
 import numpy
+import glob
 
 from PIL import Image
 
-# Configuration
-learning_rate = 0.00001
-epoch_amount = 1000
-batch_size = 480
+# Colors
+target_color = "green"
+other_colors = [
+    "black",
+    "blue",
+    "brown",
+    "grey",
+    "orange",
+    "red",
+    "violet",
+    "white",
+    "yellow"
+]
+
+# Neural net configuration
+learning_rate = 0.0001
+epoch_amount = 1
+batch_size = 1000
 
 # Select GPU for more performance (when cuda is available)
 if (torch.cuda.is_available()):
@@ -19,80 +35,52 @@ else:
 # Define dataset
 class CustomDataset(torch.utils.data.Dataset):
     
-    def __init__(self, train=True):
+    def __init__(self):
         super().__init__()
-        self.image_pixels = None
-        self.label_pixels = None
 
-        if train:
-            self.image_locations = ["./images/green/1_green.jpg", "./images/green/2_green.jpg"]
-            self.label_locations = ["./images/green/1_green_labeled.jpg", "./images/green/2_green_labeled.jpg"]
+        self.y = None
+        self.x = None
 
-            # EXTRA GREEN IMAGE DATASET
-            # self.green_image_locs = [
-            #     "./images/green/14_green.jpg",
-            #     "./images/green/17_green.jpg",
-            #     "./images/green/18_green.jpg",
-            #     "./images/green/19_green.jpg",
-            #     "./images/green/25_green.jpg"
-            # ]
-
-            # # Import green images (where all pixels should be 1)
-            # for green_image_loc in self.green_image_locs:
-            #     green_image = Image.open(green_image_loc)
-            #     resized_green_image = green_image.resize((640, 480), Image.Resampling.LANCZOS)
-            #     green_image_data = numpy.array(resized_green_image.getdata(), dtype=numpy.float32)
-            #     if self.image_pixels is None:
-            #         self.image_pixels = green_image_data
-            #     else:
-            #         self.image_pixels = numpy.concatenate((self.image_pixels, green_image_data))
-
-            # self.green_label_pixels = numpy.array([[1.0-(1e-7)] * 1] * len(self.image_pixels), dtype=numpy.float32)
-        else:
-            self.image_locations = ["./images/green/2_green.jpg"]
-            self.label_locations = ["./images/green/2_green_labeled.jpg"]
-
-        # Load input images
-        for image_location in self.image_locations:
-            image = Image.open(image_location)
-            image_data = numpy.array(image.getdata(), dtype=numpy.float32)
-            if self.image_pixels is None:
-                self.image_pixels = image_data
+        target_pixels = None
+        for f in glob.iglob(f"./images/color_dataset/{target_color}/*"):
+            image_data = numpy.asarray(Image.open(f).convert("RGB").getdata(), dtype=numpy.float32)
+            if target_pixels is None:
+                target_pixels = image_data
             else:
-                self.image_pixels = numpy.concatenate((self.image_pixels, image_data))
+                target_pixels = numpy.concatenate((target_pixels, image_data))
 
-        # Load labels for images
-        for label_location in self.label_locations:
-            label = Image.open(label_location)
-            label_data = numpy.array(label.getdata(), dtype=numpy.float32)
-            if self.label_pixels is None:
-                self.label_pixels = label_data
-            else:
-                self.label_pixels = numpy.concatenate((self.label_pixels, label_data))
+        if target_pixels is not None:
+          self.y = numpy.array([[1.0-(1e-7)]] * len(target_pixels), numpy.float32)
+          self.x = target_pixels
 
-        # Convert image pixel array to tensor
-        self.x = torch.from_numpy(numpy.array(self.image_pixels, dtype=numpy.float32))
+        other_pixels = None
+        for color in other_colors:
+            for f in glob.iglob(f"./images/color_dataset/{color}/*"):
+                image_data = numpy.asarray(Image.open(f).convert("RGB").getdata(), numpy.float32)
+                if other_pixels is None:
+                    other_pixels = image_data
+                else:
+                    other_pixels = numpy.concatenate((other_pixels, image_data))
 
-        # Convert labels to a 1 or 0 (white and black respectively)
-        self.y = []
-        for pixel in self.label_pixels:
-            if (pixel[0] > 0):
-                self.y.append([1.0-(1e-7)])
-            else:
-                self.y.append([0.0+(1e-7)])
-        self.y = torch.from_numpy(numpy.array(self.y, dtype=numpy.float32))
-
+        if other_pixels is not None:
+          self.y = numpy.concatenate((self.y, numpy.array([[0.0+(1e-7)]] * len(other_pixels), dtype=numpy.float32)))
+          self.x = numpy.concatenate((self.x, other_pixels))
+        
     def __getitem__(self, index):
+        if self.x is None or self.y is None:
+          raise
         return self.x[index], self.y[index]
 
     def __len__(self):
+        if self.x is None:
+          raise Exception()
         return len(self.x)
 
 train = CustomDataset()
-test = CustomDataset(train=False)
+# test = CustomDataset()
 
 trainDataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=12)
-testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, num_workers=12)
+# testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, num_workers=12)
 
 # Create model
 class CustomNetwork(torch.nn.Module):
@@ -114,22 +102,22 @@ model = CustomNetwork().to(device)
 
 # Train network
 iteration_count = len(train) / batch_size
-loss = torch.nn.BCELoss()
+criterion = torch.nn.BCELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
 
 for epoch in range(epoch_amount):
     for i, (inputs, labels) in enumerate(trainDataloader):
 
-        # Reset gradients
-        optimizer.zero_grad()
         # Forward pass
         prediction = model(inputs.to(device))
         # Determine loss
-        l = loss(labels.to(device), prediction)
+        l = criterion(prediction, labels.to(device))
         # Back propagation
         l.backward()
         # Update weight
         optimizer.step()
+        # Reset gradients
+        optimizer.zero_grad()
 
         with torch.no_grad():
             if (i + 1) % batch_size == 0:
@@ -138,18 +126,22 @@ for epoch in range(epoch_amount):
 # Test model
 with torch.no_grad():
 
-    n_samples = 0.0
-    n_correct = 0.0
+    # n_samples = 0.0
+    # n_correct = 0.0
 
-    for images, labels in testDataloader:
+    # for images, labels in trainDataloader:
 
-        images = images.to(device)
-        labels = labels.to(device)
+    #     images = images.to(device)
+    #     labels = labels.to(device)
 
-        predicted = model(images)
+    #     predicted = model(images)
 
-        n_samples += labels.size(0)
-        n_correct += (predicted == labels).sum().item()
+    #     n_samples += labels.size(0)
+    #     n_correct += (predicted == labels).sum().item()
 
-    print(n_correct)
-    print(f"Accuracy = {100.0 * n_correct / n_samples :.0f}%")
+    # print(n_correct)
+    # print(f"Accuracy = {100.0 * n_correct / n_samples :.0f}%")
+
+    print(f"Prediction for (255, 0, 0): {model(torch.tensor([[255.0, 0.0, 0.0]]).to(device)).item()}")
+    print(f"Prediction for (0, 255, 0): {model(torch.tensor([[0.0, 255.0, 0.0]]).to(device)).item()}")
+    print(f"Prediction for (0, 0, 255): {model(torch.tensor([[0.0, 0.0, 255.0]]).to(device)).item()}")
