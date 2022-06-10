@@ -5,23 +5,35 @@ import glob
 
 from PIL import Image
 
+# Parameters for green
+# Bias first hidden layer:
+# [0.1057,  1.1401, -0.7345]
+# Weights first hidden layer:
+# [0.3262, -0.2159,  0.2414]
+# [-0.0103,  0.0157, -0.0794]
+# [-0.2811,  0.2981, -0.2894]]
+# Bias second hidden layer:
+# [-2.1792]
+# Weights seconds hidden layer:
+# [0.0585, -0.9722,  0.6076]
+
 # Colors
-target_color = "green"
+target_color = "red"
 other_colors = [
     "black",
     "blue",
     "brown",
     "grey",
     "orange",
-    "red",
     "violet",
     "white",
-    "yellow"
+    "yellow",
+    "green"
 ]
 
 # Neural net configuration
 learning_rate = 0.0001
-epoch_amount = 1
+epoch_amount = 50
 batch_size = 1000
 
 # Select GPU for more performance (when cuda is available)
@@ -77,10 +89,9 @@ class CustomDataset(torch.utils.data.Dataset):
         return len(self.x)
 
 train = CustomDataset()
-# test = CustomDataset()
 
 trainDataloader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=12)
-# testDataloader = torch.utils.data.DataLoader(test, batch_size=batch_size, num_workers=12)
+testDataloader = torch.utils.data.DataLoader(train, num_workers=12)
 
 # Create model
 class CustomNetwork(torch.nn.Module):
@@ -126,22 +137,28 @@ for epoch in range(epoch_amount):
 # Test model
 with torch.no_grad():
 
-    # n_samples = 0.0
-    # n_correct = 0.0
+    n_samples = 0.0
+    n_correct = 0.0
 
-    # for images, labels in trainDataloader:
+    for images, labels in trainDataloader:
 
-    #     images = images.to(device)
-    #     labels = labels.to(device)
+        images = images.to(device)
+        labels = labels.to(device)
 
-    #     predicted = model(images)
+        predicted = model(images)
 
-    #     n_samples += labels.size(0)
-    #     n_correct += (predicted == labels).sum().item()
+        n_samples += labels.size(0)
+        n_correct += (predicted == labels).sum().item()
 
-    # print(n_correct)
-    # print(f"Accuracy = {100.0 * n_correct / n_samples :.0f}%")
+    print(n_correct)
+    print(f"Total accuracy = {100.0 * n_correct / n_samples :.0f}%")
 
     print(f"Prediction for (255, 0, 0): {model(torch.tensor([[255.0, 0.0, 0.0]]).to(device)).item()}")
     print(f"Prediction for (0, 255, 0): {model(torch.tensor([[0.0, 255.0, 0.0]]).to(device)).item()}")
     print(f"Prediction for (0, 0, 255): {model(torch.tensor([[0.0, 0.0, 255.0]]).to(device)).item()}")
+
+    print(model.first_hidden.bias)
+    print(model.first_hidden.weight)
+
+    print(model.second_hidden.bias)
+    print(model.second_hidden.weight)
