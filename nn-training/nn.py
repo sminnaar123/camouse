@@ -5,7 +5,7 @@ import glob
 
 from PIL import Image
 
-# Parameters for green
+# Parameters for GREEN
 # Bias first hidden layer:
 # [0.1057,  1.1401, -0.7345]
 # Weights first hidden layer:
@@ -16,6 +16,18 @@ from PIL import Image
 # [-2.1792]
 # Weights seconds hidden layer:
 # [0.0585, -0.9722,  0.6076]
+
+# Parameters for RED
+# Bias first hidden layer
+# [0.3062, -0.6659,  1.7378]
+# Weight first hidden layer
+# tensor([[ 0.2777,  0.1211, -0.2365],
+#         [-0.0732, -0.7650, -0.6020],
+#         [-0.4835,  0.6712,  0.1987]], device='cuda:0', requires_grad=True)
+# Bias second hidden layer
+# [-1.2202]
+# Weights second hidden layer
+# [-0.2881,  1.0420, -1.7457]
 
 # Colors
 target_color = "red"
