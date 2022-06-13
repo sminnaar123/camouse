@@ -1,21 +1,25 @@
-from decimal import localcontext, Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP
 import math
 
-# green params:
-#   3,  36, -24,    <-- bias
-#  10,  -7,   8,
-#   0,   1,  -3,
-#  -9,  10,  -9,
-# -70,              <-- bias
-#   2, -31,  19
+# --- GREEN PARAMS ---
+# bias (2^13):
+#    866, 9340, -6017   first, second, and third hidden
+# -17852                output
+# weights (2^5):
+#  10,  -7,   8         first hidden
+#   0,   1,  -3         second hidden
+#  -9,  10,  -9         third hidden
+#   2, -31,  19         output
 
-# red params:
-#  10, -21,  56,    <-- bias
-#   9,   4,  -8,
-#  -2, -24, -19,
-# -15,  21,   6,
-# -39,              <-- bias
-#  -9,  33, -56
+# --- RED PARAMS ---
+# bias (2^13):
+#  2508, -5455, 14236   first, second, and third hidden
+# -9996                 output
+# weights (2^5):
+#   9,   4,  -8,        first hidden
+#  -2, -24, -19,        second hidden
+# -15,  21,   6,        third hidden
+#  -9,  33, -56         output
 
 green_params = [
     0.1057,  1.1401, -0.7345,   # bias
@@ -38,7 +42,7 @@ red_params = [
 def convert(params):
     outputs = []
     for param in params:
-        output = Decimal(param * math.pow(2.0, 5.0))
+        output = Decimal(param * math.pow(2.0, 13.0))
         outputs.append(int(output.to_integral_value(rounding=ROUND_HALF_UP)))
     print(outputs)
 
