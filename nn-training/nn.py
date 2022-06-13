@@ -30,7 +30,7 @@ from PIL import Image
 # [-0.2881,  1.0420, -1.7457]
 
 # Colors
-target_color = "red"
+target_color = "green"
 other_colors = [
     "black",
     "blue",
@@ -40,13 +40,15 @@ other_colors = [
     "violet",
     "white",
     "yellow",
-    "green"
+    "red"
 ]
 
 # Neural net configuration
 learning_rate = 0.0001
 epoch_amount = 50
 batch_size = 1000
+
+torch.set_printoptions(precision=6)
 
 # Select GPU for more performance (when cuda is available)
 if (torch.cuda.is_available()):
