@@ -124,7 +124,7 @@ CLOCK_DELAY  del1(.iCLK(MIPI_PIXEL_CLK), .oCLK(MIPI_PIXEL_CLK_));
 
 //	D8M INPUT Gamma Correction
 D8M_LUT  g_lut(
-	.enable           		(0), //SW[0]
+	.enable           		(SW[0]),
 	.PIXEL_CLK        		(MIPI_PIXEL_CLK_),
 	.MIPI_PIXEL_HS    		(MIPI_PIXEL_HS),
 	.MIPI_PIXEL_VS    		(MIPI_PIXEL_VS),
@@ -219,15 +219,15 @@ Sdram_Control u7
 (
 	//	HOST Side						
 	.RESET_N     		(KEY[0]),
-	.CLK         		(SDRAM_CTRL_CLK), 
+	.CLK         		(SDRAM_CTRL_CLK),
 	
-	//	FIFO Write Side 1
 	.WR1_DATA    		(LUT_MIPI_PIXEL_D[9:0]),
 	.WR1         		(LUT_MIPI_PIXEL_HS & LUT_MIPI_PIXEL_VS),
 
 	.WR1_ADDR    		(0),
+	//	FIFO Write Side 1
 	.WR1_MAX_ADDR		(640*480),
-	.WR1_LENGTH  		(256), 
+	.WR1_LENGTH  		(256),
 	.WR1_LOAD    		(!DLY_RST_0),
 	.WR1_CLK     		(MIPI_PIXEL_CLK_),
 
@@ -267,6 +267,15 @@ RAW2RGB_J u4
 	.oRed         		(RED),
 	.oGreen       		(GREEN),
 	.oBlue        		(BLUE)
+);
+
+green_neural_network gnn
+(
+	.clk					(VGA_CLK),
+	.red         		(RED),
+	.green       		(GREEN),
+	.blue        		(BLUE),
+	.output				(LEDG[0])
 );
 
 
