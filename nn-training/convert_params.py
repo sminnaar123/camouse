@@ -3,7 +3,7 @@ import math
 
 # --- GREEN PARAMS ---
 # bias (2^13):
-#    866, 9340, -6017   first, second, and third hidden
+#    3, 9340, -6017   first, second, and third hidden
 # -17852                output
 # weights (2^5):
 #  10,  -7,   8         first hidden
@@ -42,7 +42,7 @@ red_params = [
 def convert(params):
     outputs = []
     for param in params:
-        output = Decimal(param * math.pow(2.0, 13.0))
+        output = Decimal(param * math.pow(2.0, 5.0))
         outputs.append(int(output.to_integral_value(rounding=ROUND_HALF_UP)))
     print(outputs)
 

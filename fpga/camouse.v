@@ -269,13 +269,13 @@ RAW2RGB_J u4
 	.oBlue        		(BLUE)
 );
 
-green_neural_network gnn
+green_nn gnn
 (
-	.clk					(VGA_CLK),
-	.red         		(RED),
-	.green       		(GREEN),
-	.blue        		(BLUE),
-	.output				(LEDG[0])
+	.clk_in				(VGA_CLK),
+	.red_in         	(RED),		//((SW[1] == 1) ? 0 : 255),
+	.green_in       	(GREEN),		//((SW[1] == 1) ? 255 : 0),
+	.blue_in        	(BLUE),		//((SW[1] == 1) ? 0 : 255),
+	.result				(LEDG[7])
 );
 
 
@@ -354,7 +354,7 @@ FpsMonitor uFps
 
 // LED DISPLAY
 CLOCKMEM ck1(.CLK(VGA_CLK), .CLK_FREQ(25000000), .CK_1HZ(D8M_CK_HZ));				//25MHZ
-CLOCKMEM ck2(.CLK(MIPI_REFCLK), .CLK_FREQ(20000000), .CK_1HZ(D8M_CK_HZ2));		//20MHZ
+CLOCKMEM ck2(.CLK(MIPI_REFCLK), .CLK_FREQ(20000000), .CK_1HZ(D8M_CK_HZ2));			//20MHZ
 CLOCKMEM ck3(.CLK(MIPI_PIXEL_CLK_), .CLK_FREQ(25000000), .CK_1HZ(D8M_CK_HZ3));	//25MHZ
 
 
@@ -363,9 +363,9 @@ assign LEDR =
 	D8M_CK_HZ,
 	D8M_CK_HZ2,
 	D8M_CK_HZ3,
-	5'h0,
-	CAMERA_MIPI_RELEASE,
-	MIPI_BRIDGE_RELEASE
+	1'b0,
+	1'b0,
+	1'b0
 };
 
 

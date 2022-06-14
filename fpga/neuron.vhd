@@ -8,24 +8,26 @@ generic
 	first_weight 	: integer;
 	second_weight 	: integer;
 	third_weight 	: integer;
-	bias				: integer;
-)
+	bias				: integer
+);
 port
 (
-	clk 				: in std_logic;
-	first_input 	: in integer;
-	second_input 	: in integer;
-	third_input 	: in integer;
-	output 			: out integer := 0;
-)
+	clk_in 		: in std_logic;
+	first_in 	: in integer;
+	second_in 	: in integer;
+	third_in 	: in integer;
+	result 		: out integer := 0
+);
 end neuron;
 
 architecture behavior of neuron is begin
 
 process begin
 
-	wait until rising_edge(clk);
+	wait until rising_edge(clk_in);
 	
-	output <= (first_weight * first_input + second_weight * second_input + third_weight * third_input + bias);
+	result <= (first_weight * first_in + second_weight * second_in + third_weight * third_in + bias);
 
 end process;
+
+end behavior;

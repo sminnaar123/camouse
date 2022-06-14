@@ -2,103 +2,115 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
 
-entity green_neural_network is
+entity green_nn is
 port
 (
-	clk		: in std_logic;										-- Clock frequency will the same as the VGA clock frequency
-	red		: in std_logic_vector(7 downto 0);
-	green 	: in std_logic_vector(7 downto 0);
-	blue 		: in std_logic_vector(7 downto 0);
-	output 	: out std_logic;
-)
-end neural_network;
+	clk_in		: in std_logic;										-- Clock frequency will the same as the VGA clock frequency
+	red_in		: in std_logic_vector(7 downto 0);
+	green_in 	: in std_logic_vector(7 downto 0);
+	blue_in 		: in std_logic_vector(7 downto 0);
+	result 		: out std_logic
+);
+end green_nn;
 
-architecture behavior of neural_network is
+architecture behavior of green_nn is
 
-	signal red_in, green_in, blue_in	: integer;
-	signal first_hidden_output 		: integer range 0 to 255;
-	signal second_hidden_output 		: integer range 0 to 255;
-	signal third_hidden_output 		: integer range 0 to 255;
-	signal result 							: integer range 0 to 255;
+	signal red, green, blue				: integer;
+	signal first_hidden_output 		: integer;
+	signal second_hidden_output 		: integer;
+	signal third_hidden_output 		: integer;
+	signal output_neuron_result 		: integer := 0;
 	
 begin
 
-first_hidden_neuron : entity neuron is
+first_hidden_neuron : entity work.neuron
 generic map
 (
 	first_weight 	=>	10,
 	second_weight 	=> -7,
 	third_weight 	=>	8,
-	bias				=> 866
+	bias				=> 3
 )
 port map
 (
-	clk 				=> clk,
-	first_input 	=> red_in,
-	second_input 	=> green_in,
-	third_input		=> blue_in,
-	output			=> first_hidden_output
+	clk_in 			=> clk_in,
+	first_in 		=> red,
+	second_in 		=> green,
+	third_in			=> blue,
+	result			=> first_hidden_output
 );
 
 
-second_hidden_neuron : entity neuron is
+second_hidden_neuron : entity work.neuron
 generic map
 (
 	first_weight 	=>	0,
 	second_weight 	=> 1,
 	third_weight 	=>	-3,
-	bias				=> 9340
+	bias				=> 36
 )
 port map
 (
-	clk 				=> clk,
-	first_input 	=> red_in,
-	second_input 	=> green_in,
-	third_input		=> blue_in,
-	output			=> second_hidden_output
+	clk_in 			=> clk_in,
+	first_in 		=> red,
+	second_in 		=> green,
+	third_in			=> blue,
+	result			=> second_hidden_output
 );
 
-third_hidden_neuron : entity neuron is
+third_hidden_neuron : entity work.neuron
 generic map
 (
 	first_weight 	=>	-9,
 	second_weight 	=> 10,
 	third_weight 	=>	-9,
-	bias				=> -6017
+	bias				=> -24
 )
 port map
 (
-	clk 				=> clk,
-	first_input 	=> red_in,
-	second_input 	=> green_in,
-	third_input		=> blue_in,
-	output			=> third_hidden_output
+	clk_in 			=> clk_in,
+	first_in 		=> red,
+	second_in 		=> green,
+	third_in			=> blue,
+	result			=> third_hidden_output
 );
 
 
-output_neuron : entity neuron is
+output_neuron : entity work.neuron
 generic map
 (
 	first_weight 	=>	2,
 	second_weight 	=> -31,
 	third_weight 	=>	19,
-	bias				=> -17852
+	bias				=> -70
 )
 port map
 (
-	clk 				=> clk,
-	first_input 	=> first_hidden_output,
-	second_input 	=> second_hidden_output,
-	third_input		=> third_hidden_output,
-	output			=> result
+	clk_in			=> clk_in,
+	first_in 		=> first_hidden_output,
+	second_in 		=> second_hidden_output,
+	third_in			=> third_hidden_output,
+	result			=> output_neuron_result
 );
 
 process begin
 
-	if (result <= 0) then
-		output <= "0";
-	else (result > 0)
-		output <= "1";
+	wait until rising_edge(clk_in);
+	
+	red 	<= to_integer(unsigned(red_in));
+	green <= to_integer(unsigned(green_in));
+	blue 	<= to_integer(unsigned(blue_in));
+	
+end process;
+
+process begin
+
+	wait until rising_edge(clk_in);
+
+	if (output_neuron_result >= 127) then
+		result <= '1';
+	else
+		result <= '0';
 	end if;
 	
 end process;
