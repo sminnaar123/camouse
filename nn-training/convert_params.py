@@ -1,21 +1,21 @@
 from decimal import Decimal, ROUND_HALF_UP
 import math
 
-# --- GREEN PARAMS ---
-# bias (2^13):
-#    3, 9340, -6017   first, second, and third hidden
-# -17852                output
-# weights (2^5):
+# --- GREEN PARAMS (2^5) ---
+# bias:
+#   3, 36, -24          first, second, and third hidden
+# -70                   output
+# weights:
 #  10,  -7,   8         first hidden
 #   0,   1,  -3         second hidden
 #  -9,  10,  -9         third hidden
 #   2, -31,  19         output
 
-# --- RED PARAMS ---
-# bias (2^13):
-#  2508, -5455, 14236   first, second, and third hidden
-# -9996                 output
-# weights (2^5):
+# --- RED PARAMS (2^5) ---
+# bias:
+#  10, -21, 56          first, second, and third hidden
+# -39                   output
+# weights:
 #   9,   4,  -8,        first hidden
 #  -2, -24, -19,        second hidden
 # -15,  21,   6,        third hidden
