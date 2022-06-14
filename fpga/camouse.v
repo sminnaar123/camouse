@@ -141,6 +141,8 @@ assign UART_TXD = 0;
 
 
 // HEX OFF
+assign HEX0           = 7'h7F;
+assign HEX1           = 7'h7F;
 assign HEX2           = 7'h7F;
 assign HEX3           = 7'h7F;
 assign HEX4           = 7'h7F;
@@ -269,13 +271,24 @@ RAW2RGB_J u4
 	.oBlue        		(BLUE)
 );
 
+
 green_nn gnn
 (
 	.clk_in				(VGA_CLK),
-	.red_in         	(RED),		//((SW[1] == 1) ? 0 : 255),
-	.green_in       	(GREEN),		//((SW[1] == 1) ? 255 : 0),
-	.blue_in        	(BLUE),		//((SW[1] == 1) ? 0 : 255),
-	.result				(LEDG[7])
+	.red_in         	(RED),
+	.green_in       	(GREEN),
+	.blue_in        	(BLUE),
+	.result				(LEDG)
+);
+
+
+red_nn rnn
+(
+	.clk_in				(VGA_CLK),
+	.red_in         	(RED),
+	.green_in       	(GREEN),
+	.blue_in        	(BLUE),
+	.result				(LEDR)
 );
 
 
@@ -339,34 +352,5 @@ VGA_Controller u1
 	.H_Cont				(VGA_H_CNT),
 	.V_Cont				(VGA_V_CNT)
 );
-
-
-// VS FREQUENCY TEST (60HZ)
-FpsMonitor uFps
-(
-	.clk50				(CLOCK2_50),
-	.vs					(LUT_MIPI_PIXEL_VS),
-	.fps					(),
-	.hex_fps_h			(HEX1),
-	.hex_fps_l			(HEX0)
-);
-
-
-// LED DISPLAY
-CLOCKMEM ck1(.CLK(VGA_CLK), .CLK_FREQ(25000000), .CK_1HZ(D8M_CK_HZ));				//25MHZ
-CLOCKMEM ck2(.CLK(MIPI_REFCLK), .CLK_FREQ(20000000), .CK_1HZ(D8M_CK_HZ2));			//20MHZ
-CLOCKMEM ck3(.CLK(MIPI_PIXEL_CLK_), .CLK_FREQ(25000000), .CK_1HZ(D8M_CK_HZ3));	//25MHZ
-
-
-assign LEDR =
-{
-	D8M_CK_HZ,
-	D8M_CK_HZ2,
-	D8M_CK_HZ3,
-	1'b0,
-	1'b0,
-	1'b0
-};
-
 
 endmodule

@@ -9,7 +9,7 @@ port
 	red_in		: in std_logic_vector(7 downto 0);
 	green_in 	: in std_logic_vector(7 downto 0);
 	blue_in 		: in std_logic_vector(7 downto 0);
-	result 		: out std_logic
+	result 		: out std_logic_vector(8 downto 0)
 );
 end green_nn;
 
@@ -108,9 +108,9 @@ process begin
 	wait until rising_edge(clk_in);
 
 	if (output_neuron_result >= 127) then
-		result <= '1';
+		result <= (others => '1');
 	else
-		result <= '0';
+		result <= (others => '0');
 	end if;
 	
 end process;
