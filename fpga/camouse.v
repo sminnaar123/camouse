@@ -271,7 +271,7 @@ RAW2RGB_J u4
 	.oBlue        		(BLUE)
 );
 
-
+// Neural network for detecting a green color
 green_nn gnn
 (
 	.clk_in				(VGA_CLK),
@@ -281,7 +281,7 @@ green_nn gnn
 	.result				(LEDG)
 );
 
-
+// Neural network for detecting a red color
 red_nn rnn
 (
 	.clk_in				(VGA_CLK),
