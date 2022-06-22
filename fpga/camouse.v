@@ -124,7 +124,7 @@ CLOCK_DELAY  del1(.iCLK(MIPI_PIXEL_CLK), .oCLK(MIPI_PIXEL_CLK_));
 
 //	D8M INPUT Gamma Correction
 D8M_LUT  g_lut(
-	.enable           		(SW[0]),
+	.enable           		(1),
 	.PIXEL_CLK        		(MIPI_PIXEL_CLK_),
 	.MIPI_PIXEL_HS    		(MIPI_PIXEL_HS),
 	.MIPI_PIXEL_VS    		(MIPI_PIXEL_VS),
@@ -238,7 +238,7 @@ Sdram_Control u7
 	.RD1         		(READ_Request),
 	.RD1_ADDR    		(0),
 	.RD1_MAX_ADDR		(640*480),
-	.RD1_LENGTH  		(256 ),
+	.RD1_LENGTH  		(256),
 	.RD1_LOAD    		(!DLY_RST_1),
 	.RD1_CLK     		(VGA_CLK),
 					

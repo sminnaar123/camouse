@@ -107,7 +107,7 @@ process begin
 
 	wait until rising_edge(clk_in);
 
-	if (output_neuron_result >= 127) then
+	if (output_neuron_result >= 32768) then
 		result <= (others => '1');
 	else
 		result <= (others => '0');
