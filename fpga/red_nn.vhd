@@ -1,3 +1,6 @@
+-- Sydney Minnaar - 4753046
+-- 23-06-2021
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;
@@ -9,7 +12,7 @@ port
 	red_in		: in std_logic_vector(7 downto 0);
 	green_in 	: in std_logic_vector(7 downto 0);
 	blue_in 		: in std_logic_vector(7 downto 0);
-	result 		: out std_logic_vector(17 downto 0)
+	result 		: out std_logic
 );
 end red_nn;
 
@@ -108,9 +111,9 @@ process begin
 	wait until rising_edge(clk_in);
 
 	if (output_neuron_result >= 32768) then
-		result <= (others => '1');
+		result <= '1';
 	else
-		result <= (others => '0');
+		result <= '0';
 	end if;
 	
 end process;

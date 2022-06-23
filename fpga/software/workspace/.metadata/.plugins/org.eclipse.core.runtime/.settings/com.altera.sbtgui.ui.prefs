@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+newSoftwareExampleWizardPage.defaultLocation=C\:\\vcs\\git\\camouse\\fpga\\software\\camouse
+newSoftwareExampleWizardPage.sopcinfoFile=C\:\\vcs\\git\\camouse\\fpga\\Qsys.sopcinfo
+newSoftwareExampleWizardPage2.newBspLocation=C\:\\vcs\\git\\camouse\\fpga\\software\\camouse_bsp

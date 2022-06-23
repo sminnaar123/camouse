@@ -1,3 +1,6 @@
+-- Sydney Minnaar - 4753046
+-- 23-06-2021
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.all;
 use IEEE.NUMERIC_STD.all;

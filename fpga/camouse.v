@@ -68,7 +68,16 @@ module camouse
 	input 		          		MIPI_PIXEL_HS,
 	input 		          		MIPI_PIXEL_VS,
 	output		          		MIPI_REFCLK,
-	output		          		MIPI_RESET_n
+	output		          		MIPI_RESET_n,
+	
+	//SRAM
+	inout				  	[15:0]	SRAM_DATA,
+	output				[19:0]	SRAM_ADDR,
+	output							SRAM_OE,
+	output							SRAM_WE,
+	output							SRAM_CE,
+	output							SRAM_UB,
+	output							SRAM_LB
 );
 
 
@@ -91,7 +100,9 @@ wire 	[7:0] 	RED;
 wire 	[7:0] 	GREEN; 
 wire 	[7:0] 	BLUE; 
 wire 	[12:0] 	VGA_H_CNT;			
-wire 	[12:0] 	VGA_V_CNT;	
+wire 	[12:0] 	VGA_V_CNT;
+
+wire 				SRAM_READ_WRITE;
 
 wire        	READ_Request;
 wire 	[7:0] 	B_AUTO;
@@ -278,7 +289,7 @@ green_nn gnn
 	.red_in         	(RED),
 	.green_in       	(GREEN),
 	.blue_in        	(BLUE),
-	.result				(LEDG)
+	.result				(LEDG[0])
 );
 
 // Neural network for detecting a red color
@@ -288,9 +299,28 @@ red_nn rnn
 	.red_in         	(RED),
 	.green_in       	(GREEN),
 	.blue_in        	(BLUE),
-	.result				(LEDR)
+	.result				(LEDR[16])
 );
 
+// SRAM controller
+sram_controller sram_ctrl
+(
+	//control
+	.clk					(VGA_CLK),
+	.read_or_write		(SW[17]),
+	.data_input			(SW[15:0]),
+	.data_output		(LEDR[15:0]),
+	.addr_input			(~0),
+	
+	//SRAM
+	.data					(SRAM_DATA),
+	.address				(SRAM_ADDR),
+	.output_enable		(SRAM_OE),
+	.write_enable		(SRAM_WE),
+	.chip_select		(SRAM_CE),
+	.ub					(SRAM_UB),
+	.lb					(SRAM_LB)
+);
 
 // AUTO FOCUS ENABLE
 AUTO_FOCUS_ON vd
@@ -310,8 +340,8 @@ FOCUS_ADJ adl
 	.AUTO_FOC			(KEY[3] & AUTO_FOC), 
 	.SW_Y					(0),
 	.SW_H_FREQ			(0),   
-	.SW_FUC_LINE		(SW[3]),   
-	.SW_FUC_ALL_CEN	(SW[3]),
+	.SW_FUC_LINE		(0), //(SW[3]),   
+	.SW_FUC_ALL_CEN	(0), //(SW[3]),
 	.VIDEO_HS			(VGA_HS),
 	.VIDEO_VS      	(VGA_VS),
 	.VIDEO_CLK     	(VGA_CLK),
