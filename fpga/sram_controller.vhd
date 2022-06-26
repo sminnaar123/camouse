@@ -8,51 +8,71 @@ use IEEE.NUMERIC_STD.all;
 entity sram_controller is
 port
 (
-	-- clock for regulating write and read speed
-	clk				: in std_logic;
+	clk					: in std_logic;
+	reset					: in std_logic;
 
-	-- user controls
-	read_or_write	: in std_logic; -- 0 = read, 1 = write
-	data_input		: in std_logic_vector(15 downto 0);
-	data_output		: out std_logic_vector(15 downto 0);
-	addr_input		: buffer std_logic_vector(19 downto 0);
+	-- Schematic side
+	enable				: in std_logic; -- 0 = nios read, 1 = schematic write
+	data_input			: in std_logic_vector(15 downto 0);
+	addr_input			: in std_logic_vector(19 downto 0);
 	
-	-- SRAM
-	data 				: buffer std_logic_vector(15 downto 0);
-	address 			: out std_logic_vector(19 downto 0);
-	output_enable 	: out std_logic := '0';
-	write_enable	: out std_logic := '0';
-	chip_select		: out std_logic := '1';
-	ub					: out std_logic := '0';
-	lb					: out std_logic := '0'
+	-- SRAM side
+	data 					: inout std_logic_vector(15 downto 0);
+	address 				: out std_logic_vector(19 downto 0);
+	output_enable 		: out std_logic := '0';
+	write_enable		: buffer std_logic := '0';
+	
+	-- static
+	chip_select			: out std_logic := '1';
+	ub						: out std_logic := '0';
+	lb						: out std_logic := '0'
 );
 end sram_controller;
 
-architecture behavior of sram_controller is begin
+architecture behavior of sram_controller is
+
+	-- NIOS side
+	signal data_sgnl				: std_logic_vector(15 downto 0) := (others => '0');
+	signal address_sgnl 			: std_logic_vector(19 downto 0) := (others => '0');
+
+begin
 	
 process begin
 
-	wait until (rising_edge(clk));
+	wait until rising_edge(clk);
 	
-	-- disable write_enable on next rising clock edge
-	write_enable <= '0';
-	-- prep address line
-	address <= addr_input;
-
-	if (read_or_write = '1') then
-		-- disable read
-		output_enable <= '0';
-		-- prep data line
-		data <= data_input;
-		-- Write to chip
-		write_enable <= '1';
+	if (write_enable = '1') then
+	
+		-- reset write and skip a clock cycle
+		write_enable 	<= '0';
+		
+	elsif (enable = '0') then
+	
+		-- nios read
+		address 				<= address_sgnl;
+		output_enable 		<= '1';
+		write_enable 		<= '0';
+		data_sgnl 			<= data;
+		
 	else
-		-- enable read
-		output_enable <= '1';
-		-- read from chip
-		data_output <= data;
+	
+		address 				<= addr_input;
+		data 					<= data_input;
+		output_enable 		<= '0';
+		write_enable 		<= '1';
+
 	end if;
 		
 end process;
+
+-- NIOS II Processor
+display : entity work.display
+port map
+(
+	clk_clk			=>	clk,
+	reset_reset_n	=>	reset,
+	sram_DQ			=>	data_sgnl,
+	sram_ADDR		=>	address_sgnl
+);
 
 end behavior;

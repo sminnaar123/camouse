@@ -71,7 +71,7 @@ module camouse
 	output		          		MIPI_RESET_n,
 	
 	//SRAM
-	inout				  	[15:0]	SRAM_DATA,
+	inout				  	[15:0]	SRAM_DQ,
 	output				[19:0]	SRAM_ADDR,
 	output							SRAM_OE,
 	output							SRAM_WE,
@@ -92,37 +92,41 @@ wire				DLY_RST_1;
 wire				DLY_RST_2;
 
 wire				SDRAM_CTRL_CLK;
-wire        	D8M_CK_HZ ; 
-wire        	D8M_CK_HZ2 ; 
-wire        	D8M_CK_HZ3 ; 
+wire        	D8M_CK_HZ; 
+wire        	D8M_CK_HZ2;
+wire        	D8M_CK_HZ3;
 
-wire 	[7:0] 	RED; 
-wire 	[7:0] 	GREEN; 
-wire 	[7:0] 	BLUE; 
-wire 	[12:0] 	VGA_H_CNT;			
+wire 	[7:0] 	RED;
+wire 	[7:0] 	GREEN;
+wire 	[7:0] 	BLUE;
+wire 	[12:0] 	VGA_H_CNT;
 wire 	[12:0] 	VGA_V_CNT;
-
-wire 				SRAM_READ_WRITE;
 
 wire        	READ_Request;
 wire 	[7:0] 	B_AUTO;
 wire 	[7:0] 	G_AUTO;
 wire 	[7:0] 	R_AUTO;
-wire        	RESET_N; 
+wire        	RESET_N;
 
-wire        	I2C_RELEASE;  
-wire        	AUTO_FOC; 
-wire        	CAMERA_I2C_SCL_MIPI; 
+wire        	I2C_RELEASE;
+wire        	AUTO_FOC;
+wire        	CAMERA_I2C_SCL_MIPI;
 wire        	CAMERA_I2C_SCL_AF;
 wire        	CAMERA_MIPI_RELEASE;
-wire        	MIPI_BRIDGE_RELEASE;  
+wire        	MIPI_BRIDGE_RELEASE;
  
 wire        	LUT_MIPI_PIXEL_HS;
 wire        	LUT_MIPI_PIXEL_VS;
 wire [9:0]  	LUT_MIPI_PIXEL_D ;
-wire        	MIPI_PIXEL_CLK_; 
+wire        	MIPI_PIXEL_CLK_;
 wire [9:0]  	PCK;
 
+wire 				GREEN_NN;
+wire				RED_NN;
+
+wire				SRAM_WRITE;
+wire [15:0]		SRAM_WRITE_DATA;
+wire [19:0]		SRAM_WRITE_ADDR;
 
 //=======================================================
 // Structural coding
@@ -167,6 +171,9 @@ assign CAMERA_PWDN_n  = 1;
 assign MIPI_CS_n      = 0; 
 assign MIPI_RESET_n   = RESET_N;
 
+assign LEDG[0]			 = GREEN_NN;
+assign LEDG[1]			 = SRAM_WRITE_DATA[1];
+assign LEDR[16]		 = RED_NN;
 
 // CAMERA MODULE I2C SWITCH
 assign I2C_RELEASE    = CAMERA_MIPI_RELEASE & MIPI_BRIDGE_RELEASE;
@@ -289,7 +296,7 @@ green_nn gnn
 	.red_in         	(RED),
 	.green_in       	(GREEN),
 	.blue_in        	(BLUE),
-	.result				(LEDG[0])
+	.result				(GREEN_NN)
 );
 
 // Neural network for detecting a red color
@@ -299,27 +306,44 @@ red_nn rnn
 	.red_in         	(RED),
 	.green_in       	(GREEN),
 	.blue_in        	(BLUE),
-	.result				(LEDR[16])
+	.result				(RED_NN)
 );
 
 // SRAM controller
 sram_controller sram_ctrl
 (
 	//control
-	.clk					(VGA_CLK),
-	.read_or_write		(SW[17]),
-	.data_input			(SW[15:0]),
-	.data_output		(LEDR[15:0]),
-	.addr_input			(~0),
+	.clk					(DRAM_CLK),
+	.reset				(KEY[0]),
 	
-	//SRAM
-	.data					(SRAM_DATA),
+	//Schematic write
+	.enable				(SRAM_WRITE),
+	.data_input			(SRAM_WRITE_DATA),
+	.addr_input			(SRAM_WRITE_ADDR),
+	
+	//SRAM side
+	.data					(SRAM_DQ),
 	.address				(SRAM_ADDR),
 	.output_enable		(SRAM_OE),
 	.write_enable		(SRAM_WE),
 	.chip_select		(SRAM_CE),
 	.ub					(SRAM_UB),
 	.lb					(SRAM_LB)
+);
+
+//Neural netwerk output processing
+nn_processing nnp
+(
+	//input
+	.red_nn				(RED_NN),
+	.green_nn			(GREEN_NN),
+	.x						(VGA_H_CNT),
+	.y						(VGA_V_CNT),
+	
+	//output
+	.enable				(SRAM_WRITE),
+	.data					(SRAM_WRITE_DATA),
+	.address				(SRAM_WRITE_ADDR)
 );
 
 // AUTO FOCUS ENABLE

@@ -18,7 +18,6 @@ set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 #============================================================
 set_location_assignment PIN_AG14 -to CLOCK2_50
 set_location_assignment PIN_AG15 -to CLOCK3_50
-set_location_assignment PIN_Y2 -to CLOCK_50
 
 #============================================================
 # LED
@@ -55,7 +54,6 @@ set_location_assignment PIN_H15 -to LEDR[17]
 # KEY
 #============================================================
 set_location_assignment PIN_M23 -to KEY[0]
-set_location_assignment PIN_M21 -to KEY[1]
 set_location_assignment PIN_N21 -to KEY[2]
 set_location_assignment PIN_R24 -to KEY[3]
 
@@ -549,9 +547,47 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[19] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[24] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[27] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_AB7 -to SRAM_ADDR[0]
+set_location_assignment PIN_AD7 -to SRAM_ADDR[1]
+set_location_assignment PIN_AE7 -to SRAM_ADDR[2]
+set_location_assignment PIN_AC7 -to SRAM_ADDR[3]
+set_location_assignment PIN_AB6 -to SRAM_ADDR[4]
+set_location_assignment PIN_AE6 -to SRAM_ADDR[5]
+set_location_assignment PIN_AB5 -to SRAM_ADDR[6]
+set_location_assignment PIN_AC5 -to SRAM_ADDR[7]
+set_location_assignment PIN_AF5 -to SRAM_ADDR[8]
+set_location_assignment PIN_T7 -to SRAM_ADDR[9]
+set_location_assignment PIN_AF2 -to SRAM_ADDR[10]
+set_location_assignment PIN_AD3 -to SRAM_ADDR[11]
+set_location_assignment PIN_AB4 -to SRAM_ADDR[12]
+set_location_assignment PIN_AC3 -to SRAM_ADDR[13]
+set_location_assignment PIN_AA4 -to SRAM_ADDR[14]
+set_location_assignment PIN_AB11 -to SRAM_ADDR[15]
+set_location_assignment PIN_AC11 -to SRAM_ADDR[16]
+set_location_assignment PIN_AB9 -to SRAM_ADDR[17]
+set_location_assignment PIN_AB8 -to SRAM_ADDR[18]
+set_location_assignment PIN_T8 -to SRAM_ADDR[19]
+set_location_assignment PIN_AF8 -to SRAM_CE
+set_location_assignment PIN_AD4 -to SRAM_LB
+set_location_assignment PIN_AD5 -to SRAM_OE
+set_location_assignment PIN_AC4 -to SRAM_UB
+set_location_assignment PIN_AE8 -to SRAM_WE
+set_location_assignment PIN_AG3 -to SRAM_DQ[15]
+set_location_assignment PIN_AF3 -to SRAM_DQ[14]
+set_location_assignment PIN_AE4 -to SRAM_DQ[13]
+set_location_assignment PIN_AE3 -to SRAM_DQ[12]
+set_location_assignment PIN_AE1 -to SRAM_DQ[11]
+set_location_assignment PIN_AE2 -to SRAM_DQ[10]
+set_location_assignment PIN_AD2 -to SRAM_DQ[9]
+set_location_assignment PIN_AD1 -to SRAM_DQ[8]
+set_location_assignment PIN_AF7 -to SRAM_DQ[7]
+set_location_assignment PIN_AH6 -to SRAM_DQ[6]
+set_location_assignment PIN_AG6 -to SRAM_DQ[5]
+set_location_assignment PIN_AF6 -to SRAM_DQ[4]
+set_location_assignment PIN_AH4 -to SRAM_DQ[3]
+set_location_assignment PIN_AG4 -to SRAM_DQ[2]
+set_location_assignment PIN_AF4 -to SRAM_DQ[1]
+set_location_assignment PIN_AH3 -to SRAM_DQ[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK2_50
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK3_50
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to CLOCK_50
@@ -768,48 +804,63 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MIPI_PIXEL_HS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MIPI_PIXEL_VS
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MIPI_REFCLK
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to MIPI_RESET_n
-set_location_assignment PIN_AB7 -to SRAM_ADDR[0]
-set_location_assignment PIN_AD7 -to SRAM_ADDR[1]
-set_location_assignment PIN_AE7 -to SRAM_ADDR[2]
-set_location_assignment PIN_AC7 -to SRAM_ADDR[3]
-set_location_assignment PIN_AB6 -to SRAM_ADDR[4]
-set_location_assignment PIN_AE6 -to SRAM_ADDR[5]
-set_location_assignment PIN_AB5 -to SRAM_ADDR[6]
-set_location_assignment PIN_AC5 -to SRAM_ADDR[7]
-set_location_assignment PIN_AF5 -to SRAM_ADDR[8]
-set_location_assignment PIN_T7 -to SRAM_ADDR[9]
-set_location_assignment PIN_AF2 -to SRAM_ADDR[10]
-set_location_assignment PIN_AD3 -to SRAM_ADDR[11]
-set_location_assignment PIN_AB4 -to SRAM_ADDR[12]
-set_location_assignment PIN_AC3 -to SRAM_ADDR[13]
-set_location_assignment PIN_AA4 -to SRAM_ADDR[14]
-set_location_assignment PIN_AB11 -to SRAM_ADDR[15]
-set_location_assignment PIN_AC11 -to SRAM_ADDR[16]
-set_location_assignment PIN_AB9 -to SRAM_ADDR[17]
-set_location_assignment PIN_AB8 -to SRAM_ADDR[18]
-set_location_assignment PIN_T8 -to SRAM_ADDR[19]
-set_location_assignment PIN_AF8 -to SRAM_CE
-set_location_assignment PIN_AH3 -to SRAM_DATA[0]
-set_location_assignment PIN_AF4 -to SRAM_DATA[1]
-set_location_assignment PIN_AG4 -to SRAM_DATA[2]
-set_location_assignment PIN_AH4 -to SRAM_DATA[3]
-set_location_assignment PIN_AF6 -to SRAM_DATA[4]
-set_location_assignment PIN_AG6 -to SRAM_DATA[5]
-set_location_assignment PIN_AH6 -to SRAM_DATA[6]
-set_location_assignment PIN_AF7 -to SRAM_DATA[7]
-set_location_assignment PIN_AD1 -to SRAM_DATA[8]
-set_location_assignment PIN_AD2 -to SRAM_DATA[9]
-set_location_assignment PIN_AE2 -to SRAM_DATA[10]
-set_location_assignment PIN_AE1 -to SRAM_DATA[11]
-set_location_assignment PIN_AE3 -to SRAM_DATA[12]
-set_location_assignment PIN_AE4 -to SRAM_DATA[13]
-set_location_assignment PIN_AF3 -to SRAM_DATA[14]
-set_location_assignment PIN_AG3 -to SRAM_DATA[15]
-set_location_assignment PIN_AD4 -to SRAM_LB
-set_location_assignment PIN_AD5 -to SRAM_OE
-set_location_assignment PIN_AC4 -to SRAM_UB
-set_location_assignment PIN_AE8 -to SRAM_WE
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_Y2 -to CLOCK_50
+set_location_assignment PIN_M21 -to KEY[1]
 set_global_assignment -name VHDL_FILE sram_controller.vhd
+set_global_assignment -name VHDL_FILE display.vhd
+set_global_assignment -name VERILOG_FILE submodules/display_sram_0.v
+set_global_assignment -name VERILOG_FILE submodules/display_onchip_memory2_0.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0_cpu_test_bench.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0_cpu_debug_slave_wrapper.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0_cpu_debug_slave_tck.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0_cpu_debug_slave_sysclk.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0_cpu.v
+set_global_assignment -name VERILOG_FILE submodules/display_nios2_gen2_0.v
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_rsp_mux_001.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_rsp_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_rsp_demux_001.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_rsp_demux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router_005.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router_004.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router_003.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router_002.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router_001.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_router.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_cmd_mux_002.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_cmd_mux_001.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_cmd_mux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_cmd_demux_001.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_cmd_demux.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_avalon_st_adapter_error_adapter_0.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_mm_interconnect_0_avalon_st_adapter_001_error_adapter_0.sv
+set_global_assignment -name VERILOG_FILE submodules/display_mm_interconnect_0_avalon_st_adapter_001.v
+set_global_assignment -name VERILOG_FILE submodules/display_mm_interconnect_0_avalon_st_adapter.v
+set_global_assignment -name VERILOG_FILE submodules/display_mm_interconnect_0.v
+set_global_assignment -name VERILOG_FILE submodules/display_jtag_uart_0.v
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/display_irq_mapper.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_wrap_burst_converter.sv
+set_global_assignment -name VERILOG_FILE submodules/altera_reset_synchronizer.v
+set_global_assignment -name VERILOG_FILE submodules/altera_reset_controller.v
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_width_adapter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_slave_translator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_slave_agent.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_master_translator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_master_agent.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_burst_uncompressor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_burst_adapter_uncmpr.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_burst_adapter_new.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_burst_adapter_13_1.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_burst_adapter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_arbitrator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_merlin_address_alignment.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_incr_burst_converter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_default_burst_converter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE submodules/altera_avalon_st_pipeline_stage.sv
+set_global_assignment -name VERILOG_FILE submodules/altera_avalon_st_pipeline_base.v
+set_global_assignment -name VERILOG_FILE submodules/altera_avalon_sc_fifo.v
 set_global_assignment -name VHDL_FILE red_nn.vhd
 set_global_assignment -name VHDL_FILE green_nn.vhd
 set_global_assignment -name VERILOG_FILE V/I2C_WRITE_WDATA.v
@@ -856,5 +907,6 @@ set_global_assignment -name SIGNALTAP_FILE vga.stp
 set_global_assignment -name SOURCE_FILE ../DE10_NANO_D8M_RTL/VGA_Controller/VGA_Param.h
 set_global_assignment -name VERILOG_FILE camouse.v
 set_global_assignment -name VHDL_FILE neuron.vhd
+set_global_assignment -name VHDL_FILE nn_processing.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name SLD_FILE db/vga_auto_stripped.stp
